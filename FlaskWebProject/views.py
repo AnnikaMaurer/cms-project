@@ -61,7 +61,6 @@ def post(id):
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        app.logger.info('%s logged in successfully') # logging of log in
         return redirect(url_for('home'))
     form = LoginForm()
     if form.validate_on_submit():
@@ -74,6 +73,7 @@ def login():
         next_page = request.args.get('next')
         if not next_page or url_parse(next_page).netloc != '':
             next_page = url_for('home')
+        app.logger.info('%s logged in successfully') # logging of log in
         return redirect(next_page)
     session["state"] = str(uuid.uuid4())
     auth_url = _build_auth_url(scopes=Config.SCOPE, state=session["state"])
@@ -106,6 +106,7 @@ def authorized():
 @app.route('/logout')
 def logout():
     logout_user()
+    app.logger.info('%s logged out successfully') # logging of log out
     if session.get("user"): # Used MS Login
         # Wipe out user and its token cache from session
         session.clear()
